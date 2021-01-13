@@ -37,7 +37,7 @@ class IsolaattiAudioMixer {
     // pass an array of html audio elements
     constructor(mediaElements) {
         this.audioElements = mediaElements;
-        this.tracks = new Array();
+        this.tracks = new Map();
 
         this.audioContext = new AudioContext();
         
@@ -53,7 +53,7 @@ class IsolaattiAudioMixer {
                 globalThis.audioContext.createMediaElementSource(value),
                 globalThis.audioContext
             );
-            globalThis.tracks.push(track);
+            globalThis.tracks.set(value.attributes.getNamedItem("track-name").name, track);
         });
 
         // states
@@ -62,7 +62,7 @@ class IsolaattiAudioMixer {
     }
 
     prepareMix() {
-        this.tracks.forEach(function(value) {
+        this.tracks.forEach(function(value,key) {
             value.getLastNode().connect(globalThis.mainGainNode);
         });
         this.prepared = true;
@@ -86,6 +86,14 @@ class IsolaattiAudioMixer {
         }
     }
 
+    setMainGainValue(value) {
+        globalThis.mainGainNode.gain.value = value;
+    }
+
+    setGainOfTrack() {
+
+    }
+
     // Return the blob of the mix
     exportMix() {
 
@@ -96,18 +104,22 @@ class Track {
     constructor(audioSource, audioContext) {
         this.gainNode = audioContext.createGain();
         this.stereoPanning = audioContext.createStereoPanner();
+        this.dynamicsCompressor = audioContext.createDynamicsCompressor();
 
         // create nodes for effects here
         // ...
         // ...
 
         // connect nodes
-        audioSource.connect(this.gainNode).connect(this.stereoPanning);
+        audioSource
+                    .connect(this.gainNode)
+                    .connect(this.stereoPanning)
+                    .connect(this.dynamicsCompressor);
 
     }
 
     // use the node returned to connect it to the main gain node
     getLastNode() {
-        return this.stereoPanning;
+        return this.dynamicsCompressor;
     }
 }
