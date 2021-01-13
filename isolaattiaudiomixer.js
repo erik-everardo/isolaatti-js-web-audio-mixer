@@ -35,15 +35,16 @@ class IsolaattiAudioMixer {
     // add more here...
 
     // pass an array of html audio elements
-    constructor(mediaElements) {
+    constructor(mediaElements, onTimeChangeCallback) {
         this.audioElements = mediaElements;
         this.tracks = new Map();
 
         this.audioContext = new AudioContext();
         
         this.mainGainNode = this.audioContext.createGain();
+        this.mainDynamicsCompressor = this.audioContext.createDynamicsCompressor();
 
-        this.mainGainNode.connect(this.audioContext.destination);
+        this.mainGainNode.connect(this.mainDynamicsCompressor).connect(this.audioContext.destination);
 
         globalThis = this;
 
@@ -53,8 +54,10 @@ class IsolaattiAudioMixer {
                 globalThis.audioContext.createMediaElementSource(value),
                 globalThis.audioContext
             );
-            globalThis.tracks.set(value.attributes.getNamedItem("track-name").name, track);
+            globalThis.tracks.set(value.attributes.getNamedItem("track-name").value, track);
+            value.oncanplaythrough = function(){console.log("Can play trough!!")}
         });
+        mediaElements[0].ontimeupdate = onTimeChangeCallback;
 
         // states
         this.prepared = false;
@@ -64,6 +67,7 @@ class IsolaattiAudioMixer {
     prepareMix() {
         this.tracks.forEach(function(value,key) {
             value.getLastNode().connect(globalThis.mainGainNode);
+            console.log("Playing " + key);
         });
         this.prepared = true;
     }
@@ -90,7 +94,11 @@ class IsolaattiAudioMixer {
         globalThis.mainGainNode.gain.value = value;
     }
 
-    setGainOfTrack() {
+    setGainOfTrack(nameOfTrack, value) {
+        globalThis.tracks.get(nameOfTrack).setGainValue(value);
+    }
+
+    getDuration(){
 
     }
 
@@ -113,13 +121,14 @@ class Track {
         // connect nodes
         audioSource
                     .connect(this.gainNode)
-                    .connect(this.stereoPanning)
-                    .connect(this.dynamicsCompressor);
-
+                    .connect(this.stereoPanning);
     }
 
+    setGainValue(value) {
+        this.gainNode.gain.value = value;
+    }
     // use the node returned to connect it to the main gain node
     getLastNode() {
-        return this.dynamicsCompressor;
+        return this.stereoPanning;
     }
 }
