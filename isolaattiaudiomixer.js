@@ -28,44 +28,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export class IsolaattiAudioMixer {
+class IsolaattiAudioMixer {
     // constants to define effect
     static TYPICAL_REVERB = 1;
     static LOW_PASS_FILTER = 2;
     // add more here...
 
-    constructor() {
-        this.tracks = new Map();
+    // pass an array of html audio elements
+    constructor(mediaElements) {
+        this.audioElements = mediaElements;
+        this.tracks = new Array();
 
         this.audioContext = new AudioContext();
+        
+        this.mainGainNode = this.audioContext.createGain();
+
+        this.mainGainNode.connect(this.audioContext.destination);
+
+        globalThis = this;
+
+        // creates audioSources and use them to create a Track class object
+        mediaElements.forEach(function(value) {
+            let track = new Track(
+                globalThis.audioContext.createMediaElementSource(value),
+                globalThis.audioContext
+            );
+            globalThis.tracks.push(track);
+        });
 
         // states
         this.prepared = false;
         this.playing = false;
     }
 
-    addTrackToMix(name, audioSource) {
-        // returns trackId
-        if(typeof audioSource === "")
-        this.tracks.set(name, audioSource);
-    }
-
-    addEffectToTrack(trackId) {
-
-    }
-
-    addEffectToMix() {
-
-    }
-
     prepareMix() {
-
+        this.tracks.forEach(function(value) {
+            value.getLastNode().connect(globalThis.mainGainNode);
+        });
+        this.prepared = true;
     }
 
     playMix() {
-        this.playing = true;
-        if(this.prepared) {
-
+        globalThis.playing = true;
+        if(globalThis.prepared) {
+            if (globalThis.audioContext.state === 'suspended') {
+                globalThis.audioContext.resume();
+            }
+            console.log("Playing now...");
+            globalThis.audioElements.forEach(function(it){
+                it.play();
+            });
         } else {
             throw {
                 name: "MixerNotPrepared",
@@ -74,8 +86,28 @@ export class IsolaattiAudioMixer {
         }
     }
 
-    /* Return the blob of the mix */
+    // Return the blob of the mix
     exportMix() {
 
+    }
+}
+
+class Track {
+    constructor(audioSource, audioContext) {
+        this.gainNode = audioContext.createGain();
+        this.stereoPanning = audioContext.createStereoPanner();
+
+        // create nodes for effects here
+        // ...
+        // ...
+
+        // connect nodes
+        audioSource.connect(this.gainNode).connect(this.stereoPanning);
+
+    }
+
+    // use the node returned to connect it to the main gain node
+    getLastNode() {
+        return this.stereoPanning;
     }
 }
