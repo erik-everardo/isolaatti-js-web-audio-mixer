@@ -4,7 +4,7 @@ It is super easy to use. You simply need to call the constructor and pass it an 
 
 
 ### HTML with JavaScript example
-This is not the full HTML document, only the part that is related to the librar. Usually, this is included inside the `<body></body>` tag. See the **example/index.html** file.
+This is not the full HTML document, only the part that is related to the library. Usually, this is included inside the `<body></body>` tag. See the **example/index.html** file.
 ```
 <!-- Here we define audio origin using audio tag -->
 <audio track-name="Bass" class="track-audio-element" src="bass.mp3" preload="auto" ></audio>
