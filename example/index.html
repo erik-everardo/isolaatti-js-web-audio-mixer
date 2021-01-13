@@ -25,7 +25,9 @@
         let audioElements = document.querySelectorAll(".track-audio-element");
 
         // we instantiate a new object to use the library. Create only one preferently
-        let mixer = new IsolaattiAudioMixer(audioElements);
+        let mixer = new IsolaattiAudioMixer(audioElements, function(event) {
+            console.log("Time updated...");
+        });
 
         // prepare the mixer
         mixer.prepareMix();
