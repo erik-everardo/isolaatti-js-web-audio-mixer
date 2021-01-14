@@ -30,7 +30,9 @@
         });
 
         // prepare the mixer
-        mixer.prepareMix();
+        mixer.prepareMix(function(){
+            alert("onPrepared was called. Here you can do a UI change to allow user play or anything that you want!");
+        });
     </script>
 
     <!--We need a play button -->
