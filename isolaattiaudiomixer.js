@@ -97,6 +97,19 @@ class IsolaattiAudioMixer {
         }
     }
 
+    pauseMix() {
+        globalThis.playing = false;
+        if(globalThis.prepared) {
+            globalThis.audioElements.forEach(function(it){
+                it.pause();
+            });
+        }
+    }
+
+    stopMix() {
+
+    }
+
     setMainGainValue(value) {
         globalThis.mainGainNode.gain.value = value;
     }
