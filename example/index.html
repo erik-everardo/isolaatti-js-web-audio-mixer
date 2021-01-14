@@ -26,7 +26,7 @@
 
         // we instantiate a new object to use the library. Create only one preferently
         let mixer = new IsolaattiAudioMixer(audioElements, function(event) {
-            console.log("Time updated...");
+            console.log(event.target.currentTime);
         });
 
         // prepare the mixer
