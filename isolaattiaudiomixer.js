@@ -38,7 +38,8 @@ class IsolaattiAudioMixer {
     constructor(mediaElements, onTimeChangeCallback) {
         this.audioElements = mediaElements;
         this.tracks = new Map();
-
+        this.numberOfTracksThatCanPlayTrough = 0;
+        this.onTimeChangeCallback = onTimeChangeCallback;
         this.audioContext = new AudioContext();
         
         this.mainGainNode = this.audioContext.createGain();
@@ -48,16 +49,6 @@ class IsolaattiAudioMixer {
 
         globalThis = this;
 
-        // creates audioSources and use them to create a Track class object
-        mediaElements.forEach(function(value) {
-            let track = new Track(
-                globalThis.audioContext.createMediaElementSource(value),
-                globalThis.audioContext
-            );
-            globalThis.tracks.set(value.attributes.getNamedItem("track-name").value, track);
-            value.oncanplaythrough = function(){console.log("Can play trough!!")}
-        });
-        mediaElements[0].ontimeupdate = onTimeChangeCallback;
 
         // states
         this.prepared = false;
@@ -65,11 +56,27 @@ class IsolaattiAudioMixer {
     }
 
     prepareMix() {
-        this.tracks.forEach(function(value,key) {
-            value.getLastNode().connect(globalThis.mainGainNode);
-            console.log("Playing " + key);
+        // creates audioSources and use them to create a Track class object
+        this.audioElements.forEach(function(value) {
+            let track = new Track(
+                globalThis.audioContext.createMediaElementSource(value),
+                globalThis.audioContext
+            );
+            globalThis.tracks.set(value.attributes.getNamedItem("track-name").value, track);
+            value.oncanplaythrough = function(){
+                globalThis.numberOfTracksThatCanPlayTrough++;
+                if(globalThis.numberOfTracksThatCanPlayTrough === globalThis.tracks.size){
+                    console.info("All audio elements can play trough. Creating tracks...");
+                    globalThis.audioElements[0].ontimeupdate = globalThis.onTimeChangeCallback;
+                    globalThis.tracks.forEach(function(value,key) {
+                        value.getLastNode().connect(globalThis.mainGainNode);
+                        console.info("Track created: " + key);
+                    });
+                    console.info("All tracks are ready");
+                    globalThis.prepared = true;
+                }
+            };
         });
-        this.prepared = true;
     }
 
     playMix() {
