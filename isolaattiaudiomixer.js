@@ -55,7 +55,7 @@ class IsolaattiAudioMixer {
         this.playing = false;
     }
 
-    prepareMix() {
+    prepareMix(onPrepared) {
         // creates audioSources and use them to create a Track class object
         this.audioElements.forEach(function(value) {
             let track = new Track(
@@ -72,7 +72,7 @@ class IsolaattiAudioMixer {
                         value.getLastNode().connect(globalThis.mainGainNode);
                         console.info("Track created: " + key);
                     });
-                    console.info("All tracks are ready");
+                    onPrepared();
                     globalThis.prepared = true;
                 }
             };
@@ -105,8 +105,10 @@ class IsolaattiAudioMixer {
         globalThis.tracks.get(nameOfTrack).setGainValue(value);
     }
 
+    // For now this method assumes all tracks are same long. 
+    // Fix this in the future!
     getDuration(){
-
+        return globalThis.audioElements[0].duration;
     }
 
     // Return the blob of the mix
