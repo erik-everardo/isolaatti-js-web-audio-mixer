@@ -45,7 +45,7 @@ class IsolaattiAudioMixer {
         this.mainGainNode = this.audioContext.createGain();
         this.mainDynamicsCompressor = this.audioContext.createDynamicsCompressor();
 
-        this.mainGainNode.connect(this.mainDynamicsCompressor).connect(this.audioContext.destination);
+        this.mainDynamicsCompressor.connect(this.mainGainNode).connect(this.audioContext.destination);
 
         globalThis = this;
 
