@@ -124,6 +124,12 @@ class IsolaattiAudioMixer {
         return globalThis.audioElements[0].duration;
     }
 
+    seekTo(timeInSeconds) {
+        globalThis.audioElements.forEach(function(it) {
+            it.currentTime = timeInSeconds;
+        });
+    }
+
     // Return the blob of the mix
     exportMix() {
 
