@@ -135,6 +135,7 @@ class IsolaattiAudioMixer {
     // THIS METHOD SHOULD ONLY BE CALLED ONCE, OTHERWISE MORE THAN ONE EVENT WILL BE CREATED!!
     setOnMixEnded(callbackFunction) {
         globalThis.audioElements[0].addEventListener("ended", function(event) {
+            globalThis.playing = false;
             callbackFunction(event);
         });
     }
