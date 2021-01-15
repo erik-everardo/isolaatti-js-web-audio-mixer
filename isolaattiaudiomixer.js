@@ -130,6 +130,19 @@ class IsolaattiAudioMixer {
         });
     }
 
+    // For now this method assumes all tracks are same long.
+    // Fix this in the future!
+    // THIS METHOD SHOULD ONLY BE CALLED ONCE, OTHERWISE MORE THAN ONE EVENT WILL BE CREATED!!
+    setOnMixEnded(callbackFunction) {
+        globalThis.audioElements[0].addEventListener("ended", function(event) {
+            callbackFunction(event);
+        });
+    }
+
+    setPannerValueOfTrack(trackName, value) {
+        globalThis.tracks.get(trackName).setPannerValue(value, globalThis.audioContext);
+    }
+
     // Return the blob of the mix
     exportMix() {
 
@@ -154,6 +167,10 @@ class Track {
 
     setGainValue(value) {
         this.gainNode.gain.value = value;
+    }
+
+    setPannerValue(value, audioContext) {
+        this.stereoPanning.pan.setValueAtTime(value, audioContext.currentTime);
     }
     // use the node returned to connect it to the main gain node
     getLastNode() {
