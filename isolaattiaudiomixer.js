@@ -43,9 +43,12 @@ class IsolaattiAudioMixer {
         this.audioContext = new AudioContext();
         
         this.mainGainNode = this.audioContext.createGain();
+        this.audioAnalyserNode = this.audioContext.createAnalyser();
         this.mainDynamicsCompressor = this.audioContext.createDynamicsCompressor();
 
-        this.mainDynamicsCompressor.connect(this.mainGainNode).connect(this.audioContext.destination);
+        this.mainDynamicsCompressor.connect(this.mainGainNode)
+            .connect(this.audioAnalyserNode)
+            .connect(this.audioContext.destination);
 
         globalThis = this;
 
@@ -150,6 +153,10 @@ class IsolaattiAudioMixer {
         return globalThis.mainGainNode;
     }
 
+    getAudioAnalyserNode() {
+        return globalThis.audioAnalyserNode;
+    }
+
     // Return the blob of the mix
     exportMix() {
 
@@ -161,6 +168,7 @@ class Track {
         this.gainNode = audioContext.createGain();
         this.stereoPanning = audioContext.createStereoPanner();
         this.dynamicsCompressor = audioContext.createDynamicsCompressor();
+        this.audioAnalyserNode = AudioContext.createAnalyser();
 
         // create nodes for effects here
         // ...
@@ -169,7 +177,8 @@ class Track {
         // connect nodes
         audioSource
                     .connect(this.gainNode)
-                    .connect(this.stereoPanning);
+                    .connect(this.stereoPanning)
+                    .connect(this.audioAnalyserNode);
     }
 
     setGainValue(value) {
@@ -179,8 +188,13 @@ class Track {
     setPannerValue(value, audioContext) {
         this.stereoPanning.pan.setValueAtTime(value, audioContext.currentTime);
     }
+
+    getAudioAnalyserNode() {
+        return this.audioAnalyserNode;
+    }
+    
     // use the node returned to connect it to the main gain node
     getLastNode() {
-        return this.stereoPanning;
+        return this.audioAnalyserNode;
     }
 }
