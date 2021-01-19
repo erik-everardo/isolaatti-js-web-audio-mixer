@@ -144,6 +144,12 @@ class IsolaattiAudioMixer {
         globalThis.tracks.get(trackName).setPannerValue(value, globalThis.audioContext);
     }
 
+    // this node is useful to extend the mixer, using the AudioAPI
+    // For example, add audio analiser
+    getGainNode() {
+        return globalThis.mainGainNode;
+    }
+
     // Return the blob of the mix
     exportMix() {
 
