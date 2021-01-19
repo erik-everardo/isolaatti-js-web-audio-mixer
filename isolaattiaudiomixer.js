@@ -168,7 +168,7 @@ class Track {
         this.gainNode = audioContext.createGain();
         this.stereoPanning = audioContext.createStereoPanner();
         this.dynamicsCompressor = audioContext.createDynamicsCompressor();
-        this.audioAnalyserNode = AudioContext.createAnalyser();
+        this.audioAnalyserNode = audioContext.createAnalyser();
 
         // create nodes for effects here
         // ...
@@ -192,7 +192,7 @@ class Track {
     getAudioAnalyserNode() {
         return this.audioAnalyserNode;
     }
-    
+
     // use the node returned to connect it to the main gain node
     getLastNode() {
         return this.audioAnalyserNode;
