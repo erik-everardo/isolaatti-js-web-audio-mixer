@@ -157,6 +157,10 @@ class IsolaattiAudioMixer {
         return globalThis.audioAnalyserNode;
     }
 
+    getTracks() {
+        return globalThis.tracks;
+    }
+
     // Return the blob of the mix
     exportMix() {
 
